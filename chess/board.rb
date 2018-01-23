@@ -1,4 +1,5 @@
 require_relative 'piece'
+# require './piece.rb'
 
 class Board
   attr_reader :rows
@@ -7,14 +8,14 @@ class Board
     @rows = Array.new(8){Array.new(8)}
 
     8.times do |col|
-      self[[1,col]] = Pawn.new(:white, self, [1,col])
+      self[[6,col]] = Pawn.new(:white, self, [6,col])
     end
 
     8.times do |col|
-      self[[6,col]] = Pawn.new(:black, self, [1,col])
+      self[[1,col]] = Pawn.new(:black, self, [1,col])
     end
 
-    [[0,:white],[7,:black]].each do |row,color|
+    [[7,:white],[0,:black]].each do |row,color|
       self[[row,0]] = Rook.new(color, self, [row,0])
       self[[row,7]] = Rook.new(color, self, [row,7])
 
@@ -28,6 +29,7 @@ class Board
       self[[row,4]] = King.new(color, self, [row,4])
 
     end
+
 
     (2..5).each do |row|
       (0..7).each do |col|
@@ -47,7 +49,16 @@ class Board
 
     # self[end_pos].position = nil unless self[end_pos].is_a?(NullPiece)
     self[end_pos],self[start_pos] = self[start_pos], NullPiece.instance
-    # self[end_pos].position = end_pos
+    self[end_pos].position = end_pos
+  end
+
+  def in_check?(color)
+    king = rows.flatten.find { |piece| piece.is_a?(King) && piece.color == color}
+    opponent_pieces = rows.flatten.select {|piece| piece.color && piece.color != color}
+    opponent_pieces.any? do |piece|
+      debugger
+      piece.move.include?(king.position)
+    end
   end
 
   def valid_pos?(pos)
@@ -63,6 +74,7 @@ class Board
     row, col = pos
     rows[row][col]
   end
+
   private
 
 end
