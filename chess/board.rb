@@ -41,14 +41,31 @@ class Board
     end
   end
 
-  def move_piece(start_pos, end_pos)
+  def move_piece(start_pos, end_pos, player_color)
+
     if self[start_pos].is_a?(NullPiece)
-      raise NoPieceError.new("No piece here")
+      raise IllegalMoveError.new("No piece here")
+    elsif self[start_pos].color != player_color
+      raise IllegalMoveError.new("Not your piece")
     elsif !valid_pos?(end_pos)
-      raise IllegalMoveError.new("Can't move here")
+      raise IllegalMoveError.new("Can't move off the board")
+    elsif !self[start_pos].valid_moves.include?(end_pos)
+      raise IllegalMoveError.new("Not a valid move")
     end
 
     # self[end_pos].position = nil unless self[end_pos].is_a?(NullPiece)
+
+    self[end_pos],self[start_pos] = self[start_pos], NullPiece.instance
+    self[end_pos].position = end_pos
+  end
+
+  def move_piece!(start_pos, end_pos)
+    if self[start_pos].is_a?(NullPiece)
+      raise NoPieceError.new("No piece here")
+    elsif !valid_pos?(end_pos)
+      raise IllegalMoveError.new("Can't move off the board")
+    end
+
     self[end_pos],self[start_pos] = self[start_pos], NullPiece.instance
     self[end_pos].position = end_pos
   end
@@ -61,7 +78,7 @@ class Board
     end
   end
 
-  def checkmate?(color)
+  def checkmate?(color) 
     players_pieces = rows.flatten.select {|piece| piece.color && piece.color == color}
     in_check?(color) && players_pieces.all?{|piece| piece.valid_moves.empty?}
   end
@@ -97,7 +114,6 @@ class Board
 end
 
 
-NoPieceError = Class.new(StandardError)
 IllegalMoveError = Class.new(StandardError)
 
 if __FILE__ == $PROGRAM_NAME

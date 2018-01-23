@@ -10,29 +10,33 @@ class Display
     @cursor = Cursor.new([0,0], board)
   end
 
-  def test
-    until false
-      system("clear")
-      render
-      cursor.get_input
-    end
-  end
+  UNICODE_MAPPINGS = {
+    King => "\u265A ",
+    Queen => "\u265B ",
+    Rook => "\u265C ",
+    Bishop => "\u265D ",
+    Knight => "\u265E ",
+    Pawn => "\u265F "
+  }
+
   def render
-    print %q(  0 1 2 3 4 5 6 7 ) + "\n"
+    system("clear")
+    print %q(  a b c d e f g h ) + "\n"
     (0..7).each do |row|
-      print "#{row} "
+      print "#{row + 1} "
       (0..7).each do |col|
+        pos = [row,col]
         display_char =
-          if board[[row,col]].is_a?(NullPiece)
+          if board[pos].is_a?(NullPiece)
             "  "
           else
-            board[[row,col]].class.to_s[0..1]
+            UNICODE_MAPPINGS[board[pos].class]
           end
-        background_color = (row + col).even? ? :white : :green
-        if [row,col] == cursor.cursor_pos
-          print display_char.colorize(:background => :yellow)
+        background_color = (row + col).even? ? :grey : :green
+        if pos == cursor.cursor_pos
+          print display_char.colorize(:color => board[pos].color, :background => :yellow)
         else
-          print display_char.colorize(:background => background_color)
+          print display_char.colorize(:color => board[pos].color, :background => background_color)
         end
 
       end
