@@ -19,9 +19,18 @@ class Piece
   end
 
   def valid_moves
-
+    move.reject{|position| move_into_check?(position)}
   end
 
+  def move_into_check?(end_pos)
+    test_board = board.dup
+    test_board.move_piece(position,end_pos)
+    test_board.in_check?(color)
+  end
+
+  def dup(new_board)
+    self.class.new(color, new_board, position.dup)
+  end
 end
 
 class Rook < Piece
