@@ -1,4 +1,3 @@
-require 'byebug'
 require_relative 'board'
 require_relative 'human_player'
 require_relative 'display'
@@ -12,13 +11,12 @@ class Game
     @other_player = player2
   end
 
-
   def play
     until game_over?
       display.render
       turn_message
       begin
-        start_pos, end_pos = current_player.make_move(display) #method returns an array [start_pos,end_pos]
+        start_pos, end_pos = current_player.make_move(display)
         board.move_piece(start_pos, end_pos, current_player.color)
       rescue IllegalMoveError => e
         puts e.message

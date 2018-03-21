@@ -1,4 +1,4 @@
-require 'byebug'
+
 require 'colorize'
 require_relative 'cursor'
 require_relative 'board'
@@ -7,7 +7,7 @@ class Display
   attr_reader :board, :cursor
   def initialize(board)
     @board = board
-    @cursor = Cursor.new([0,0], board)
+    @cursor = Cursor.new([0, 0], board)
   end
 
   UNICODE_MAPPINGS = {
@@ -25,20 +25,14 @@ class Display
     (0..7).each do |row|
       print "#{row + 1} "
       (0..7).each do |col|
-        pos = [row,col]
-        display_char =
-          if board[pos].is_a?(NullPiece)
-            "  "
-          else
-            UNICODE_MAPPINGS[board[pos].class]
-          end
+        pos = [row, col]
+        display_char = board[pos].is_a?(NullPiece) ? '  ' : UNICODE_MAPPINGS[board[pos].class]
         background_color = (row + col).even? ? :grey : :green
         if pos == cursor.cursor_pos
           print display_char.colorize(:color => board[pos].color, :background => :yellow)
         else
           print display_char.colorize(:color => board[pos].color, :background => background_color)
         end
-
       end
       print "\n"
     end
@@ -46,7 +40,6 @@ class Display
 end
 
 if __FILE__ == $PROGRAM_NAME
-
   disp = Display.new(Board.new)
   disp.test
 end
